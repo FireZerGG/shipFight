@@ -2,6 +2,7 @@ const ws = require('ws')
 
 const wss = new ws.Server({
     port: 5000,
+    host: '0.0.0.0'
 }, () => console.log('server start on 5000'))
 
 let queue = []
@@ -28,13 +29,13 @@ wss.on('connection', function connection(ws) {
                 }
                 break
             case 'move':
-                console.log(1)
                 games.forEach(game => {
-                    if (game[0].id === ws.id) {
-                        send(game[1].id, message.move)
+                    console.log(ws.id)
+                    if (game[0] === ws.id) {
+                        send(game[1], message.move)
                     }
                     if (game[1] === ws.id) {
-                        send(game[0].id, message.move)
+                        send(game[0], message.move)
                     }
                 })
                 break

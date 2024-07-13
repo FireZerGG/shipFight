@@ -8,7 +8,7 @@ export function Main() {
     const [isInQueue, setIsInQueue] = useState(false)
     const [cells, setSells] = useState(Array(100).fill(0))
     const [opponentCells, setOpponentCells] = useState('')
-    const [opponentMove, setOpponentMove] = useState('')
+    const [opponentMove, setOpponentMove] = useState(-1)
 
     const socket = useRef()
     const insertIntoQueue = () => {
@@ -25,8 +25,7 @@ export function Main() {
         }
 
         socket.current.onmessage = (event) => {
-            console.log(event.data)
-            if (typeof(JSON.parse(event.data)) !== 'string') {
+            if (typeof(JSON.parse(event.data)) !== 'number') {
                 setIsInQueue(false)
                 setOpponentCells(JSON.parse(event.data))
             } else {
@@ -62,6 +61,7 @@ export function Main() {
                 opponentCells = {opponentCells}
                 setOpponentCells = {setOpponentCells}
                 sendMove = {sendMove}
+                opponentMove = {opponentMove}
 
             />
             <button onClick={insertIntoQueue}>a</button>
