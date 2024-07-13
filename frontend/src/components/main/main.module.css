@@ -11,6 +11,7 @@
 }
 
 .gameField{
+    position: relative;
     display: grid;
     grid-template-columns: repeat(10, 45px);
     grid-template-rows: repeat(10, 45px);
