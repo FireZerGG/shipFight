@@ -1,0 +1,42 @@
+.main {
+    padding:  40px 60px;
+}
+
+.gameMenu {
+    margin-left: auto;
+    margin-right: auto;
+    width: max-content;
+    display: flex;
+    gap: 50px;
+}
+
+.gameField{
+    display: grid;
+    grid-template-columns: repeat(10, 45px);
+    grid-template-rows: repeat(10, 45px);
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+.cell{
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0;
+    padding: 0;
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+.gameSetupPanel {
+    background-color: #96f1c8;
+    border-radius: 30px;
+    width: 450px;
+    height: inherit;
+    padding: 20px 40px;
+}
+
+.setupPanelHeading{
+    color: white;
+    font-size: xx-large;
+    font-weight: bold;
+}
