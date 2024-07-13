@@ -5,7 +5,11 @@ export function Ship({ id }) {
     const shipRef = useRef(null);
 
     const dragStartHandler = (ev, ship) => {
-        console.log('drag', ship.id);
+        //console.log('drag', ship.id);
+        const rect = ev.target.getBoundingClientRect();
+        const offsetX = ev.clientX - rect.left;
+        const offsetY = ev.clientY - rect.top;
+        ev.dataTransfer.setData('text/plain', [offsetX, offsetY])
     }
 
     const dragOverHandler = (ev) => {
