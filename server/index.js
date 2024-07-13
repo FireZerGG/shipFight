@@ -15,11 +15,11 @@ wss.on('connection', function connection(ws) {
             case 'queue':
                 if (queue.length === 0) {
                     queue.push({id:ws.id, field: message.field})
-                    console.log(queue)
                 }
                 else {
                     let pair = [queue[0].id, ws.id]
                     games.push(pair)
+                    console.log(games)
 
                     send(queue[0].id, message.field)
                     send(ws.id, queue[0].field)
@@ -28,12 +28,13 @@ wss.on('connection', function connection(ws) {
                 }
                 break
             case 'move':
+                console.log(1)
                 games.forEach(game => {
                     if (game[0].id === ws.id) {
-                        send(game[1].id, message.field)
+                        send(game[1].id, message.move)
                     }
                     if (game[1] === ws.id) {
-                        send(game[0].id, message.field)
+                        send(game[0].id, message.move)
                     }
                 })
                 break

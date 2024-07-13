@@ -5,8 +5,10 @@ import { Game } from "./Game"
 
 export function Main() {
 
-    const [cells, setSells] = useState(Array(100).fill(0))
     const [isInQueue, setIsInQueue] = useState(false)
+    const [cells, setSells] = useState(Array(100).fill(0))
+    const [opponentCells, setOpponentCells] = useState('')
+    const [opponentMove, setOpponentMove] = useState('')
 
     const socket = useRef()
     const insertIntoQueue = () => {
@@ -23,11 +25,12 @@ export function Main() {
         }
 
         socket.current.onmessage = (event) => {
-            console.log(JSON.parse(event.data))
-            if (typeof(JSON.parse(event.data)) == 'string') {
-                console.log(1)
+            console.log(event.data)
+            if (typeof(JSON.parse(event.data)) !== 'string') {
+                setIsInQueue(false)
+                setOpponentCells(JSON.parse(event.data))
             } else {
-                console.log(2)
+                setOpponentMove(JSON.parse(event.data))
             }
         }
 
@@ -39,14 +42,29 @@ export function Main() {
         }
     }
 
+    const sendMove = (move) => {
+        socket.current.send(JSON.stringify({
+            event: 'move',
+            move: move
+        }))
+    }
+
+    const opponentMoveHandler = () => {
+
+    }
+
     return (
         <main className={mainStyles.main}>
             <Game 
                 cells = {cells}
                 setSells = {setSells}
                 isInQueue = {isInQueue}
+                opponentCells = {opponentCells}
+                setOpponentCells = {setOpponentCells}
+                sendMove = {sendMove}
+
             />
             <button onClick={insertIntoQueue}>a</button>
         </main>
-    );
+    )
 }
