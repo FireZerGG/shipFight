@@ -2,10 +2,10 @@ import mainStyles from "./main.module.css";
 import { GameField } from "./game-field";
 import { Ship } from "./Ship";
 
-export function GameMenu() {
+export function GameMenu({ cells }) {
     return (
         <div className={mainStyles.gameMenu}>
-            <GameField></GameField>
+            <GameField cells={cells}></GameField>
             <GameSetupPanel />
         </div>
     );
