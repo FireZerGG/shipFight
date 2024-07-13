@@ -1,27 +1,15 @@
-import { useEffect, useRef } from "react"
 import { GameField } from "./game-field"
 
-export function Game ()  {
-
-    const socket = useRef()
-
-    useEffect(() => {
-        socket.current = new WebSocket('ws://localhost:5000')
-
-        socket.current.onopen = () => {
-
-        }
-
-        socket.current.onmessage = () => {
-
-        }
-
-    }, [])
+export function Game ({cells, setSells, isInQueue})  {
 
   return (
     <div >
-        <GameField />
-        <GameField />
+        {isInQueue 
+        ? <h2>Ожидаем второго игрока</h2>
+        :<GameField 
+          cells = {cells}
+          setSells = {setSells}
+        />}
     </div>
   )
 }

@@ -4,8 +4,8 @@ const wss = new ws.Server({
     port: 5000,
 }, () => console.log('server start on 5000'))
 
-const queue = []
-const games = []
+let queue = []
+let games = []
 
 wss.on('connection', function connection(ws) {
     ws.id = Date.now()
@@ -15,6 +15,7 @@ wss.on('connection', function connection(ws) {
             case 'queue':
                 if (queue.length === 0) {
                     queue.push({id:ws.id, field: message.field})
+                    console.log(queue)
                 }
                 else {
                     let pair = [queue[0].id, ws.id]

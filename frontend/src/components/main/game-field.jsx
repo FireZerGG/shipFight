@@ -1,15 +1,10 @@
 import { useState } from "react"
 import mainStyles from "./main.module.css"
 
-export function GameField() {
-    let cellsArr = [1, 1, 1, 1]
-    for (let i= 4; i < 100; i++) {
-        cellsArr.push(0)
-    }
+export function GameField({cells, setSells}) {
 
-    const [cells, setSells] = useState(cellsArr)
-    let canAttack = true
     // этот useState будет находится в родительском компоненте, setSells будет прокидываться сюда
+    let canAttack = true
 
     const attack = (index) => {
         if (!canAttack) return
