@@ -9,7 +9,8 @@ export function GameField({ cells, setSells, sendMove, canAttack, isOpponentFiel
     let [shipsLayout, setShipsLayout] = useState([])
 
     const attack = (index) => {
-        if (canAttack) return
+        if (!isOpponentField) return
+        if (!canAttack) return
         if (cells[index] === 2 || cells[index] === 3) {
             return
         } else if (cells[index] === 0) {

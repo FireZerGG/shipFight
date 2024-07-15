@@ -10,36 +10,34 @@ let games = []
 
 wss.on('connection', function connection(ws) {
     ws.id = Date.now()
+    console.log(`подключился человк(id: ${ws.id})`)
     ws.on('message', function (message) {
         message = JSON.parse(message)
         switch (message.event) {
             case 'queue':
                 if (queue.length === 0) {
-                    queue.push({id:ws.id, field: message.field})
+                    queue.push({id:ws.id, field: message.field, move: message.move})
                 }
                 else {
                     let pair = [queue[0].id, ws.id]
                     games.push(pair)
-                    console.log(games)
 
-                    send(queue[0].id, message.field)
-                    send(ws.id, queue[0].field)
+                    send(queue[0].id, {field: message.field, move: queue[0].move})
+                    send(ws.id, {field: queue[0].field, move: queue[0].move === 'first' ? 'second' : 'first'})
 
                     queue = []
                 }
                 break
             case 'move':
-                games.forEach(game => {
-                    console.log(ws.id)
-                    if (game[0] === ws.id) {
-                        send(game[1], message.move)
-                    }
-                    if (game[1] === ws.id) {
-                        send(game[0], message.move)
-                    }
-                })
+                let opponent = findOpponentId(ws.id)
+                send(opponent, message.move)
                 break
         }
+    })
+
+    ws.on('close',  () => {
+        let opponent = findOpponentId(ws.id)
+        send(opponent, 'Leave')
     })
 })
 
@@ -49,4 +47,15 @@ const send = (id, e) => {
             client.send(JSON.stringify(e))
         }
     })
+}
+
+const findOpponentId = (id) => {
+    for (let game of games) {
+        if (game[0] === id) {
+            return game[1]
+        }
+        if (game[1] === id) {
+            return game[0]
+        }
+    }
 }

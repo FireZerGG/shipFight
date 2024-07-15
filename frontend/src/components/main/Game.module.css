@@ -1,0 +1,42 @@
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 100px;
+    padding-left: 150px;
+    padding-right: 150px;
+}
+
+.gameInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 100px;
+}
+
+.exitBtn {
+    height: 43px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 130px;
+    background-color: darkgrey;
+    border: none;
+    color: white;
+    line-height: 43px;
+    font-size: 17px;
+    font-weight: 400;
+    border-radius: 10px;
+}
+
+@media (max-width: 1600px) {
+    .container {
+        padding-left: 70px;
+        padding-right: 70px;
+    }
+}
+
+@media (max-width: 1450px) {
+    .container {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
