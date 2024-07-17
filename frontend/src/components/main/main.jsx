@@ -13,6 +13,7 @@ export function Main() {
     const [opponentCells, setOpponentCells] = useState('')
     const [opponentMove, setOpponentMove] = useState(-1)
     const [currentMove, setCurrentMove] = useState('')
+    const [modalText, setModalText] = useState('')
 
     const socket = useRef()
     const insertIntoQueue = () => {
@@ -39,18 +40,21 @@ export function Main() {
                 setOpponentMove(JSON.parse(event.data))
                 setCurrentMove('first')
             } else if (typeof(JSON.parse(event.data)) === 'string') {
-                console.log('оппонент вышел, надо бы дописать сюда нормальной логики')
                 socket.current.close()
-                navigate('/')
+                setModalText('Противник вышел из игры. \n Возвращение в меню...')
+                setTimeout(() => {
+                    navigate('/')
+                }, 2000);
             }
         }
 
         socket.current.onclose = () => {
-          console.log('сокет закрыт')
+            setSells(Array(100).fill(0))
+            console.log('сокет закрыт')
 
         }
         socket.current.onerror = () => {
-          console.log('ошибка сокета')
+            console.log('ошибка сокета')
         }
     }
 
@@ -64,7 +68,10 @@ export function Main() {
 
     const leaveGame = () => {
         socket.current.close()
-        navigate('/')
+        setModalText('Вы вышли из игры. \n Возвращение в меню...')
+        setTimeout(() => {
+            navigate('/')
+        }, 2000);
     }
 
     return (
@@ -82,6 +89,8 @@ export function Main() {
                 setOpponentCells = {setOpponentCells}
                 sendMove = {sendMove}
                 leaveGame = {leaveGame}
+                modalText = {modalText}
+                setModalText = {setModalText}
                 opponentMove = {opponentMove}/>
                 }/>
             </Routes>
