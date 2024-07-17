@@ -27,6 +27,42 @@
     border-radius: 10px;
 }
 
+.modalWindow {
+    position: fixed;
+    top: 120px;
+    left: 0;
+    z-index: 1;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    transform: scale(0);
+}
+
+.modalWindow.active {
+    transform: scale(1);
+}
+
+.modalContent {
+    height: 130px;
+    width: 270px;
+    margin-top: 270px;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 10px 0px 10px;
+    white-space: pre-line;
+    font-size: 20px;
+}
+
+.modalWindow::backdrop {
+    background-color: red;
+}
+
 @media (max-width: 1600px) {
     .container {
         padding-left: 70px;

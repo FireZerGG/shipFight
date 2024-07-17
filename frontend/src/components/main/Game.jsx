@@ -1,10 +1,25 @@
+import { useState } from 'react'
 import s from './Game.module.css'
 import { GameField } from "./game-field"
+import ModalWindow from './ModalWindow'
+import { useEffect } from 'react'
 
 export function Game ({cells, setSells, isInQueue, opponentCells, setOpponentCells, 
-                      sendMove, opponentMove, leaveGame, currentMove})  {
+sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText}) {
+
+  useEffect(() => {
+    if (modalText !== '') {
+      setTimeout(() => {
+        setModalText('')
+      }, 2000);
+    } 
+  },[modalText])
+
   return (
     <div className={s.container}>
+
+        <ModalWindow modalText = {modalText} />
+
         <GameField 
           isOpponentField = {false} 
           cells = {cells}
