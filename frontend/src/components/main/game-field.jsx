@@ -37,60 +37,11 @@ export function GameField({ cells, setSells, sendMove, canAttack, isOpponentFiel
         }
     }, [opponentMove])
 
-    const dragOverHandler = (ev) => {
-        ev.preventDefault();
-    }
-
-    const dropHandler = (ev) => {
-        ev.preventDefault();
-        const data = ev.dataTransfer.getData('text/plain').split(',');
-        const rect = fieldRef.current.getBoundingClientRect();
-        const shipPointX = ev.clientX - rect.left - parseFloat(data[0]) + 20;
-        const shipPointY = ev.clientY - rect.top - parseFloat(data[1]) + 20;
-        const shipPointXCell = Math.floor(shipPointX / 45);
-        const shipPointYCell = Math.floor(shipPointY / 45);
-        shipMoveAttemptHandler(data[2], [shipPointXCell, shipPointYCell], 'hor')
-    }
-
-    const shipMoveAttemptHandler = (id, start, rotation = 'ver') => {
-        if (start[0] < 0 || start[1] < 0) return;
-        let size = 0;
-        let shipNumber = parseInt(id.split('_')[1].slice(4));
-        if (shipNumber <= 1) {
-            size = 4;
-        }
-        else if (shipNumber <= 3) {
-            size = 3;
-        }
-        else if (shipNumber <= 6) {
-            size = 2;
-        }
-        else if (shipNumber <= 10) {
-            size = 1;
-        }
-        console.log(size);
-        if (rotation === 'ver' && start[1] + size > 10) return;
-        else if (rotation === 'hor' && start[0] + size > 10) return;
-        else shipMoveHandler(size, start, rotation);
-    }
-
-    const shipMoveHandler = (size, start, rotation) => {
-        const newShip = {
-            size: size,
-            startX: start[0],
-            startY: start[1],
-            rotation: rotation
-        }
-        setShipsLayout([...shipsLayout, newShip]);
-    }
-
 
     return (
         <div
             ref={fieldRef}
             className={mainStyles.gameField}
-            onDragOver={(ev) => dragOverHandler(ev)}
-            onDrop={(ev) => dropHandler(ev)}
         >
             {cells.map((e, index) => (
                 <GameCell
@@ -102,6 +53,8 @@ export function GameField({ cells, setSells, sendMove, canAttack, isOpponentFiel
             {shipsLayout.map((ship, index) => (
                 <Ship
                     key={index}
+                    isOnField={ship.isOnField}
+                    shipNumber={ship.shipNumber}
                     size={ship.size}
                     startX={ship.startX}
                     startY={ship.startY}
