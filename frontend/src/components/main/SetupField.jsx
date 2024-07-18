@@ -2,7 +2,7 @@ import mainStyles from "./main.module.css"
 import { useRef } from "react";
 import { Ship } from "./Ship";
 
-export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
+export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsLayout }) {
     let fieldRef = useRef(null);
 
     const dragOverHandler = (ev) => {
@@ -37,14 +37,14 @@ export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
         }
         if (rotation === 'ver' && start[1] + size > 10) return;
         else if (rotation === 'hor' && start[0] + size > 10) return;
-        else if (areCellsVacant(size, start, rotation)){
+        else if (areCellsVacant(size, start, rotation)) {
             shipMoveHandler(shipNumber, size, start, rotation);
         }
     }
 
     const shipMoveHandler = (shipNumber, size, start, rotation) => {
-        let shipMoved = shipsLayout.filter(e => e.shipNumber===parseInt(shipNumber))[0];
-        let newShipsLayout = shipsLayout.filter(e => e.shipNumber!==parseInt(shipNumber));
+        //let shipMoved = shipsLayout.filter(e => e.shipNumber === parseInt(shipNumber))[0];
+        let newShipsLayout = shipsLayout.filter(e => e.shipNumber !== parseInt(shipNumber));
         const newShip = {
             shipNumber: parseInt(shipNumber),
             isOnField: true,
@@ -53,58 +53,89 @@ export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
             startY: start[1],
             rotation: rotation
         }
-        if (shipMoved.isOnField) {
-            deOccupyCells(shipMoved.size, shipMoved.startX, shipMoved.startY, shipMoved.rotation);
-        }
-        occupyCells(size, start, rotation);
         newShipsLayout = [...newShipsLayout, newShip];
         setShipsLayout(newShipsLayout);
+        // if (shipMoved.isOnField) {
+        //     deOccupyCells(shipMoved.size, shipMoved.startX, shipMoved.startY, shipMoved.rotation);
+        // }
+        //occupyCells(size, start, rotation);
+        refreshOccupiedCells(newShipsLayout);
     }
 
     const areCellsVacant = (size, start, rotation) => {
-        if (rotation === 'ver'){
-            for (let i = 0; i < size; i++){
-                if (cells[10*(start[1]+i) + start[0]] === 1) return false;
+        if (rotation === 'ver') {
+            for (let i = 0; i < size; i++) {
+                if (cells[10 * (start[1] + i) + start[0]] === 1 || cells[10 * (start[1] + i) + start[0]] === 4) return false;
             }
             return true;
         }
         else {
-            for (let i = 0; i < size; i++){
-                if (cells[10*start[1] + start[0]+i] === 1) return false;
+            for (let i = 0; i < size; i++) {
+                if (cells[10 * start[1] + start[0] + i] === 1 || cells[10 * start[1] + start[0] + i] === 4) return false;
             }
             return true;
         }
     }
 
-    const occupyCells = (size, start, rotation) => {
-        const newCells = cells;
-        if (rotation === 'ver'){
-            for (let i = 0; i < size; i++){
-                newCells[10*(start[1]+i) + start[0]] = 1;
-            }
-        }
-        else {
-            for (let i = 0; i < size; i++){
-                newCells[10*start[1] + start[0]+i] = 1; 
-            }
-        }
-        setCells(newCells);
-    }
+    // const refreshOccupiedCells = (newShipsLayout) => {
+    //     const newCells = new Array(100).fill(0);
+    //     for (let ship of newShipsLayout.filter(ship => ship.isOnField)){
+    //         if (ship.rotation === 'ver'){
+    //             for (let i = 0; i < ship.size; i++) {
+    //                 newCells[10 * (ship.startY + i) + ship.startX] = 1;
+    //             }
+    //         }
+    //         else {
+    //             for (let i = 0; i < ship.size; i++) {
+    //                 newCells[10 * ship.startY + ship.startX + i] = 1;
+    //             }
+    //         }
+    //     }
+    //     refreshBufferCells(newCells);
+    // }
 
-    const deOccupyCells = (size, startX, startY, rotation) => {
-        const newCells = cells;
-        if (rotation === 'ver'){
-            for (let i = 0; i < size; i++){
-                newCells[10*(startY+i) + startX] = 0;
-            }
-        }
-        else {
-            for (let i = 0; i < size; i++){
-                newCells[10*startY + startX+i] = 0; 
-            }
-        }
-        setCells(newCells);
-    }
+    // const occupyCells = (size, start, rotation) => {
+    //     const newCells = cells;
+    //     if (rotation === 'ver') {
+    //         for (let i = 0; i < size; i++) {
+    //             newCells[10 * (start[1] + i) + start[0]] = 1;
+    //         }
+    //     }
+    //     else {
+    //         for (let i = 0; i < size; i++) {
+    //             newCells[10 * start[1] + start[0] + i] = 1;
+    //         }
+    //     }
+    //     refreshBufferCells(newCells);
+    // }
+
+    // const deOccupyCells = (size, startX, startY, rotation) => {
+    //     const newCells = cells;
+    //     if (rotation === 'ver') {
+    //         for (let i = 0; i < size; i++) {
+    //             newCells[10 * (startY + i) + startX] = 0;
+    //         }
+    //     }
+    //     else {
+    //         for (let i = 0; i < size; i++) {
+    //             newCells[10 * startY + startX + i] = 0;
+    //         }
+    //     }
+    //     refreshBufferCells(newCells);
+    // }
+
+    // const refreshBufferCells = (newCells) => {
+    //     newCells = newCells.map((e) => e === 4 ? 0 : e);
+    //     for (let i in newCells) {
+    //         if (newCells[i] === 1) {
+    //             if (newCells?.[i - 10] === 0) newCells[i - 10] = 4;
+    //             if (newCells?.[parseInt(i) + 10] === 0) newCells[parseInt(i) + 10] = 4;
+    //             if (i % 10 !== 9 && newCells?.[parseInt(i) + 1] === 0) newCells[parseInt(i) + 1] = 4;
+    //             if (i % 10 !== 0 && newCells?.[i - 1] === 0) newCells[i - 1] = 4;
+    //         }
+    //     }
+    //     setCells(newCells);
+    // }
 
 
     return (
@@ -128,7 +159,10 @@ export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
                     size={ship.size}
                     startX={ship.startX}
                     startY={ship.startY}
-                    rotation={'ver'}></Ship>
+                    rotation={'ver'}
+                    shipsLayout={shipsLayout}
+                    refreshOccupiedCells={refreshOccupiedCells}
+                />
             ))}
         </div>
     )
@@ -136,6 +170,6 @@ export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
 
 function GameCell({ e }) {
     return (
-        <button  className={mainStyles.cell}>{e}</button>
+        <button className={mainStyles.cell}>{e}</button>
     )
 }
