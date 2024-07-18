@@ -15,7 +15,7 @@ export function Ship({ id, shipNumber, isOnField, size, startX, startY, rotation
     }
 
     const dragEndHandler = () => {
-        refreshOccupiedCells(shipsLayout);
+        if (isOnField) refreshOccupiedCells(shipsLayout);
     }
 
     // const deOccupyCells = (size, startX, startY, rotation) => {
