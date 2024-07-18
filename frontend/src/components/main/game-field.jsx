@@ -1,8 +1,9 @@
 import mainStyles from "./main.module.css"
 import { useRef, useState, useEffect } from "react";
 import { Ship } from "./Ship";
+import { navigate } from "react-router-dom";
 
-export function GameField({ cells, setSells, sendMove, canAttack, isOpponentField, opponentMove }) {
+export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
 
     let fieldRef = useRef(null);
 
@@ -11,27 +12,45 @@ export function GameField({ cells, setSells, sendMove, canAttack, isOpponentFiel
     const attack = (index) => {
         if (!isOpponentField) return
         if (!canAttack) return
+
+        let newCells
+
         if (cells[index] === 2 || cells[index] === 3) {
             return
         } else if (cells[index] === 0) {
-            setSells(prefCells => prefCells.map((num, i) => i === index ? 3 : num))
-        } else if (cells[index] === 1) {
-            setSells(prefCells => prefCells.map((num, i) => i === index ? 2 : num))
+            newCells = cells.map((num, i) => i === index ? 3 : num)
+            setCells(newCells)
+        } else {
+            newCells = cells.map((num, i) => i === index ? 2 : num)
+            setCells(newCells)
         }
         if (isOpponentField) {
             sendMove(index)
         }
+
+        if (newCells.filter(c => c === 2).length === 20) {
+            setModalText('Вы победили! \n Возвращение в меню...')
+            delayedNav()
+        }
+
     }
 
     useEffect(() => {
         if (!isOpponentField) {
             if (opponentMove !== -1) {
-                if (cells[opponentMove] === 2 || cells[opponentMove] === 3) {
-                    return
-                } else if (cells[opponentMove] === 0) {
-                    setSells(prefCells => prefCells.map((num, i) => i === opponentMove ? 3 : num))
-                } else if (cells[opponentMove] === 1) {
-                    setSells(prefCells => prefCells.map((num, i) => i === opponentMove ? 2 : num))
+
+                let newCells
+
+                if (cells[opponentMove] === 0) {
+                    newCells = cells.map((num, i) => i === opponentMove ? 3 : num)
+                    setCells(newCells)
+                } else {
+                    newCells = cells.map((num, i) => i === opponentMove ? 2 : num)
+                    setCells(newCells)
+                }
+                if (newCells.filter(c => c === 2).length === 20) {
+                    setModalText('Вы проиграли :(  \n Возвращение в меню...')
+                    delayedNav()
                 }
             }
         }

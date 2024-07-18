@@ -9,11 +9,17 @@ export function Main() {
     const navigate = useNavigate ();
 
     const [isInQueue, setIsInQueue] = useState(false)
-    const [cells, setSells] = useState(Array(100).fill(0))
+    const [cells, setCells] = useState(Array(100).fill(0))
     const [opponentCells, setOpponentCells] = useState('')
     const [opponentMove, setOpponentMove] = useState(-1)
     const [currentMove, setCurrentMove] = useState('')
     const [modalText, setModalText] = useState('')
+
+    const delayedNav = () => {
+        setTimeout(() => {
+            navigate('/')
+        }, 2000);
+    }
 
     const socket = useRef()
     const insertIntoQueue = () => {
@@ -42,14 +48,12 @@ export function Main() {
             } else if (typeof(JSON.parse(event.data)) === 'string') {
                 socket.current.close()
                 setModalText('Противник вышел из игры. \n Возвращение в меню...')
-                setTimeout(() => {
-                    navigate('/')
-                }, 2000);
+                delayedNav()
             }
         }
 
         socket.current.onclose = () => {
-            setSells(Array(100).fill(0))
+            setCells(Array(100).fill(0))
             console.log('сокет закрыт')
 
         }
@@ -69,21 +73,19 @@ export function Main() {
     const leaveGame = () => {
         socket.current.close()
         setModalText('Вы вышли из игры. \n Возвращение в меню...')
-        setTimeout(() => {
-            navigate('/')
-        }, 2000);
+        delayedNav()
     }
 
     return (
         <main className={mainStyles.main}>
 
             <Routes>
-                <Route path="/" element={<GameMenu cells={cells} insertIntoQueue = {insertIntoQueue}/>}/>
+                <Route path="/" element={<GameMenu cells={cells} insertIntoQueue = {insertIntoQueue} setCells = {setCells} />}/>
                 <Route path="/game" element={
                     <Game 
                 cells = {cells}
                 currentMove = {currentMove}
-                setSells = {setSells}
+                setCells = {setCells}
                 isInQueue = {isInQueue}
                 opponentCells = {opponentCells}
                 setOpponentCells = {setOpponentCells}
@@ -91,7 +93,8 @@ export function Main() {
                 leaveGame = {leaveGame}
                 modalText = {modalText}
                 setModalText = {setModalText}
-                opponentMove = {opponentMove}/>
+                opponentMove = {opponentMove}
+                delayedNav = {delayedNav}/>
                 }/>
             </Routes>
 

@@ -4,8 +4,8 @@ import { GameField } from "./game-field"
 import ModalWindow from './ModalWindow'
 import { useEffect } from 'react'
 
-export function Game ({cells, setSells, isInQueue, opponentCells, setOpponentCells, 
-sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText}) {
+export function Game ({cells, setCells, isInQueue, opponentCells, setOpponentCells, 
+sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText, delayedNav}) {
 
   useEffect(() => {
     if (modalText !== '') {
@@ -24,7 +24,9 @@ sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText}) {
           isOpponentField = {false} 
           cells = {cells}
           opponentMove = {opponentMove}
-          setSells = {setSells}
+          setCells = {setCells}
+          setModalText = {setModalText}
+          delayedNav = {delayedNav}
         />
         {
           isInQueue 
@@ -41,7 +43,9 @@ sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText}) {
                 isOpponentField = {true}
                 canAttack = {currentMove === 'first' ? true : false}
                 cells = {opponentCells}
-                setSells = {setOpponentCells}
+                setCells = {setOpponentCells}
+                setModalText = {setModalText}
+                delayedNav = {delayedNav}
               /> 
               </>
         }
