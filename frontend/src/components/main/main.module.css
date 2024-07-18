@@ -55,6 +55,7 @@
 
 .ship{
     border: 2px solid red;
+    box-sizing: border-box;
     background-color: transparent;
     margin: 5px;
 }
