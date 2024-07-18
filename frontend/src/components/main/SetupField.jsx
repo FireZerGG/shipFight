@@ -1,9 +1,8 @@
 import mainStyles from "./main.module.css"
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Ship } from "./Ship";
 
-export function SetupField({ cells, setSells, shipsLayout, setShipsLayout }) {
-
+export function SetupField({ cells, setCells, shipsLayout, setShipsLayout }) {
     let fieldRef = useRef(null);
 
     const dragOverHandler = (ev) => {
@@ -38,17 +37,14 @@ export function SetupField({ cells, setSells, shipsLayout, setShipsLayout }) {
         }
         if (rotation === 'ver' && start[1] + size > 10) return;
         else if (rotation === 'hor' && start[0] + size > 10) return;
-        else {
+        else if (areCellsVacant(size, start, rotation)){
             shipMoveHandler(shipNumber, size, start, rotation);
-
         }
     }
 
     const shipMoveHandler = (shipNumber, size, start, rotation) => {
+        let shipMoved = shipsLayout.filter(e => e.shipNumber===parseInt(shipNumber))[0];
         let newShipsLayout = shipsLayout.filter(e => e.shipNumber!==parseInt(shipNumber));
-        setShipsLayout(newShipsLayout);
-        console.log(newShipsLayout);
-        console.log(shipsLayout);
         const newShip = {
             shipNumber: parseInt(shipNumber),
             isOnField: true,
@@ -57,8 +53,57 @@ export function SetupField({ cells, setSells, shipsLayout, setShipsLayout }) {
             startY: start[1],
             rotation: rotation
         }
-        setShipsLayout([...shipsLayout, newShip]);
-        //console.log('added new Ship', shipsLayout);
+        if (shipMoved.isOnField) {
+            deOccupyCells(shipMoved.size, shipMoved.startX, shipMoved.startY, shipMoved.rotation);
+        }
+        occupyCells(size, start, rotation);
+        newShipsLayout = [...newShipsLayout, newShip];
+        setShipsLayout(newShipsLayout);
+    }
+
+    const areCellsVacant = (size, start, rotation) => {
+        if (rotation === 'ver'){
+            for (let i = 0; i < size; i++){
+                if (cells[10*(start[1]+i) + start[0]] === 1) return false;
+            }
+            return true;
+        }
+        else {
+            for (let i = 0; i < size; i++){
+                if (cells[10*start[1] + start[0]+i] === 1) return false;
+            }
+            return true;
+        }
+    }
+
+    const occupyCells = (size, start, rotation) => {
+        const newCells = cells;
+        if (rotation === 'ver'){
+            for (let i = 0; i < size; i++){
+                newCells[10*(start[1]+i) + start[0]] = 1;
+            }
+        }
+        else {
+            for (let i = 0; i < size; i++){
+                newCells[10*start[1] + start[0]+i] = 1; 
+            }
+        }
+        setCells(newCells);
+    }
+
+    const deOccupyCells = (size, startX, startY, rotation) => {
+        const newCells = cells;
+        if (rotation === 'ver'){
+            for (let i = 0; i < size; i++){
+                newCells[10*(startY+i) + startX] = 0;
+            }
+        }
+        else {
+            for (let i = 0; i < size; i++){
+                newCells[10*startY + startX+i] = 0; 
+            }
+        }
+        setCells(newCells);
     }
 
 
@@ -75,7 +120,7 @@ export function SetupField({ cells, setSells, shipsLayout, setShipsLayout }) {
                     e={e}
                 ></GameCell>
             ))}
-            {shipsLayout.map((ship, index) => (
+            {shipsLayout.filter(e => e.isOnField).map((ship, index) => (
                 <Ship
                     key={index}
                     isOnField={ship.isOnField}
