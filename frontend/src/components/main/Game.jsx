@@ -1,19 +1,89 @@
-import { useState } from 'react'
 import s from './Game.module.css'
 import { GameField } from "./game-field"
 import ModalWindow from './ModalWindow'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-export function Game ({cells, setCells, isInQueue, opponentCells, setOpponentCells, 
-sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText, delayedNav}) {
+export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
+
+  const [isInQueue, setIsInQueue] = useState(false)
+  const [opponentCells, setOpponentCells] = useState("")
+  const [opponentMove, setOpponentMove] = useState(-1)
+  const [currentMove, setCurrentMove] = useState("")
+  const [modalText, setModalText] = useState("")
 
   useEffect(() => {
-    if (modalText !== '') {
+    if (modalText !== "") {
       setTimeout(() => {
-        setModalText('')
+        setModalText("")
       }, 2000);
-    } 
-  },[modalText])
+    }
+  }, [modalText])
+
+  useEffect(() => {
+    if (needToNavigate) {
+      navigate("/")
+    }
+  }, [])
+  if (needToNavigate) {
+    return
+  }
+
+  const sendMove = (move) => {
+    setCurrentMove("second")
+    socket.current.send(
+      JSON.stringify({
+        event: "move",
+        move: move,
+      })
+    )
+  }
+
+  const leaveGame = () => {
+    socket.current.close()
+    setModalText("Вы вышли из игры. \n Возвращение в меню...")
+    delayedNav()
+  }
+
+  const delayedNav = () => {
+    setTimeout(() => {
+      navigate("/")
+    }, 2000)
+  }
+
+  socket.current.onopen = () => {
+    setIsInQueue(true)
+    setCurrentMove(Math.random() < 0.5 ? "first" : "second")
+    const message = {
+      event: "queue",
+      field: cells,
+      move: currentMove,
+    }
+
+    socket.current.send(JSON.stringify(message))
+  }
+
+  socket.current.onmessage = (event) => {
+    if (typeof JSON.parse(event.data) === "object") {
+      setCurrentMove(JSON.parse(event.data).move)
+      setOpponentCells(JSON.parse(event.data).field)
+      setIsInQueue(false)
+    } else if (typeof JSON.parse(event.data) === "number") {
+      setOpponentMove(JSON.parse(event.data))
+      setCurrentMove("first")
+    } else if (typeof JSON.parse(event.data) === "string") {
+      socket.current.close()
+      setModalText("Противник вышел из игры. \n Возвращение в меню...")
+      delayedNav()
+    }
+  }
+
+  socket.current.onclose = () => {
+    setCells(Array(100).fill(0))
+    console.log("сокет закрыт")
+  }
+  socket.current.onerror = () => {
+    console.log("ошибка сокета")
+  }
 
   return (
     <div className={s.container}>
