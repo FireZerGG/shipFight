@@ -1,11 +1,16 @@
-import { useState } from 'react'
 import s from './Game.module.css'
 import { GameField } from "./game-field"
 import ModalWindow from './ModalWindow'
 import { useEffect } from 'react'
 
 export function Game ({cells, setCells, isInQueue, opponentCells, setOpponentCells, 
-sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText, delayedNav}) {
+sendMove, opponentMove, leaveGame, currentMove, modalText, setModalText, delayedNav, navigate, needToNavigate}) {
+
+  useEffect(() => {
+    if (needToNavigate) {
+      navigate('/')
+    }
+  },[])
 
   useEffect(() => {
     if (modalText !== '') {

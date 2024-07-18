@@ -1,19 +1,21 @@
 import mainStyles from "./main.module.css";
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { GameMenu } from "./game-menu";
 import { Game } from "./Game"
 import { Routes, Route, useNavigate } from 'react-router-dom'
 
 export function Main() {
 
-    const navigate = useNavigate ();
+    const navigate = useNavigate ()
 
+    
     const [isInQueue, setIsInQueue] = useState(false)
     const [cells, setCells] = useState(Array(100).fill(0))
     const [opponentCells, setOpponentCells] = useState('')
     const [opponentMove, setOpponentMove] = useState(-1)
     const [currentMove, setCurrentMove] = useState('')
     const [modalText, setModalText] = useState('')
+    const [needToNavigate, setNeedToNavigate] = useState(true)
 
     const delayedNav = () => {
         setTimeout(() => {
@@ -23,7 +25,10 @@ export function Main() {
 
     const socket = useRef()
     const insertIntoQueue = () => {
+        setNeedToNavigate(false)
         socket.current = new WebSocket('ws://localhost:5000')
+
+        setCells(prefCells => prefCells.map(c => c === 4 ? 0 : c))
 
         socket.current.onopen = () => {
             setIsInQueue(true)
@@ -94,6 +99,9 @@ export function Main() {
                 modalText = {modalText}
                 setModalText = {setModalText}
                 opponentMove = {opponentMove}
+                navigate = {navigate}
+                needToNavigate = {needToNavigate}
+                socket = {socket}
                 delayedNav = {delayedNav}/>
                 }/>
             </Routes>
