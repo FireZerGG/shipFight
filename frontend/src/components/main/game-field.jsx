@@ -2,6 +2,8 @@ import mainStyles from "./main.module.css"
 import { useRef, useState, useEffect } from "react";
 import { Ship } from "./Ship";
 import { navigate } from "react-router-dom";
+import cross from './svg/cross.svg'
+import dot from './svg/dot.svg'
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
 
@@ -64,6 +66,7 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         >
             {cells.map((e, index) => (
                 <GameCell
+                    isOpponentField = {isOpponentField}
                     key={index}
                     e={e}
                     onClick={() => attack(index)}
@@ -83,8 +86,49 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     )
 }
 
-function GameCell({ onClick, e }) {
+function GameCell({ onClick, e, isOpponentField}) {
+
+    let CurrentCellState 
+
+    if (!isOpponentField) {
+        switch (e) {
+            case 0:
+                CurrentCellState = <></>
+                break;
+            case 1:
+                CurrentCellState = 1
+                break;
+            case 2:
+                CurrentCellState = <img src={cross} alt="cross" /> 
+                break;
+            case 3:
+                CurrentCellState = <img src={dot} alt="dot" />
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (e) {
+            case 0:
+                CurrentCellState = <></>
+                break;
+            case 1:
+                CurrentCellState = <></>
+                break;
+            case 2:
+                CurrentCellState = <img src={cross} alt="cross" /> 
+                break;
+            case 3:
+                CurrentCellState = <img src={dot} alt="dot" />
+                break;
+            default:
+                break;
+        }
+    }
+
     return (
-        <button onClick={onClick} className={mainStyles.cell}>{e}</button>
+        <button onClick={onClick} className={mainStyles.cell}>{
+            CurrentCellState
+        }</button>
     )
 }
