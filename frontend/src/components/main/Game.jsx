@@ -29,7 +29,9 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
   }
 
   const sendMove = (move) => {
-    setCurrentMove("second")
+    if (cells[move] !== 1 && cells[move] !== 2) {
+      setCurrentMove("second")
+    }
     socket.current.send(
       JSON.stringify({
         event: "move",
@@ -52,14 +54,12 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
 
   socket.current.onopen = () => {
     setIsInQueue(true)
-    setCurrentMove(Math.random() < 0.5 ? "first" : "second")
-    const message = {
+    const move = Math.random() < 0.5 ? "first" : "second"
+    socket.current.send(JSON.stringify({
       event: "queue",
       field: cells,
-      move: currentMove,
-    }
-
-    socket.current.send(JSON.stringify(message))
+      move: move,
+    }))
   }
 
   socket.current.onmessage = (event) => {
@@ -69,7 +69,9 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
       setIsInQueue(false)
     } else if (typeof JSON.parse(event.data) === "number") {
       setOpponentMove(JSON.parse(event.data))
-      setCurrentMove("first")
+      if (opponentCells[JSON.parse(event.data)] !== 1 && opponentCells[JSON.parse(event.data)] !== 2) {
+        setCurrentMove("first")
+      }
     } else if (typeof JSON.parse(event.data) === "string") {
       socket.current.close()
       setModalText("Противник вышел из игры. \n Возвращение в меню...")
