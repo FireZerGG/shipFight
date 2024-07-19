@@ -14,9 +14,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     const attack = (index) => {
         if (!isOpponentField) return
         if (!canAttack) return
-
+        
         let newCells
-
         if (cells[index] === 2 || cells[index] === 3) {
             return
         } else if (cells[index] === 0) {
@@ -26,6 +25,7 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             newCells = cells.map((num, i) => i === index ? 2 : num)
             setCells(newCells)
         }
+
         if (isOpponentField) {
             sendMove(index)
         }
