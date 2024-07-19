@@ -10,41 +10,12 @@ export function Ship({ id, shipNumber, isOnField, size, startX, startY, rotation
         if (isOnField){
             let newShipsLayout = shipsLayout.filter(ship => ship.shipNumber !== shipNumber);
             refreshOccupiedCells(newShipsLayout);
-            //deOccupyCells(size, startX, startY, rotation)
         }
     }
 
     const dragEndHandler = () => {
         if (isOnField) refreshOccupiedCells(shipsLayout);
     }
-
-    // const deOccupyCells = (size, startX, startY, rotation) => {
-    //     const newCells = cells;
-    //     if (rotation === 'ver') {
-    //         for (let i = 0; i < size; i++) {
-    //             newCells[10 * (startY + i) + startX] = 0;
-    //         }
-    //     }
-    //     else {
-    //         for (let i = 0; i < size; i++) {
-    //             newCells[10 * startY + startX + i] = 0;
-    //         }
-    //     }
-    //     refreshBufferCells(newCells);
-    // }
-
-    // const refreshBufferCells = (newCells) => {
-    //     newCells = newCells.map((e) => e === 4 ? 0 : e);
-    //     for (let i in newCells) {
-    //         if (newCells[i] === 1) {
-    //             if (newCells?.[i - 10] === 0) newCells[i - 10] = 4;
-    //             if (newCells?.[parseInt(i) + 10] === 0) newCells[parseInt(i) + 10] = 4;
-    //             if (Math.floor(i / 10) !== 9 && newCells?.[parseInt(i) + 1] === 0) newCells[parseInt(i) + 1] = 4;
-    //             if (Math.floor(i / 10) !== 0 && newCells?.[i - 1] === 0) newCells[i - 1] = 4;
-    //         }
-    //     }
-    //     setCells(newCells);
-    // }
 
     if (!isOnField) {
         return (

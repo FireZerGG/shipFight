@@ -57,7 +57,6 @@ function GameSetupPanel({ refreshOccupiedCells, insertIntoQueue, shipsLayout, se
         const shipNumber = ev.dataTransfer.getData('text/plain').split(',')[2];
         const shipRemoved = shipsLayout.filter(e => e.shipNumber === parseInt(shipNumber))[0];
         if (shipRemoved.isOnField) {
-            //deOccupyCells(shipRemoved.size, shipRemoved.startX, shipRemoved.startY, shipRemoved.rotation);
             let newShipsLayout = shipsLayout.filter(e => e.shipNumber !== parseInt(shipNumber));
             const newShip = {
                 shipNumber: parseInt(shipNumber),
@@ -70,33 +69,6 @@ function GameSetupPanel({ refreshOccupiedCells, insertIntoQueue, shipsLayout, se
         }
     }
 
-    // const deOccupyCells = (size, startX, startY, rotation) => {
-    //     const newCells = cells;
-    //     if (rotation === 'ver') {
-    //         for (let i = 0; i < size; i++) {
-    //             newCells[10 * (startY + i) + startX] = 0;
-    //         }
-    //     }
-    //     else {
-    //         for (let i = 0; i < size; i++) {
-    //             newCells[10 * startY + startX + i] = 0;
-    //         }
-    //     }
-    //     refreshBufferCells(newCells);
-    // }
-
-    // const refreshBufferCells = (newCells) => {
-    //     newCells = newCells.map((e) => e === 4 ? 0 : e);
-    //     for (let i in newCells) {
-    //         if (newCells[i] === 1) {
-    //             if (newCells?.[i - 10] === 0) newCells[i - 10] = 4;
-    //             if (newCells?.[parseInt(i) + 10] === 0) newCells[parseInt(i) + 10] = 4;
-    //             if (Math.floor(i / 10) !== 9 && newCells?.[parseInt(i) + 1] === 0) newCells[parseInt(i) + 1] = 4;
-    //             if (Math.floor(i / 10) !== 0 && newCells?.[i - 1] === 0) newCells[i - 1] = 4;
-    //         }
-    //     }
-    //     setCells(newCells);
-    // }
 
     return (
         <div
