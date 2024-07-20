@@ -4,6 +4,7 @@ import { Ship } from "./Ship";
 import { navigate } from "react-router-dom";
 import cross from './svg/cross.svg'
 import dot from './svg/dot.svg'
+import { fullShipDetect , outlineDefeatedShips } from './gameFieldFunctions'
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
 
@@ -20,10 +21,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             return
         } else if (cells[index] === 0) {
             newCells = cells.map((num, i) => i === index ? 3 : num)
-            setCells(newCells)
         } else {
             newCells = cells.map((num, i) => i === index ? 2 : num)
-            setCells(newCells)
         }
 
         if (isOpponentField) {
@@ -34,6 +33,10 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             setModalText('Вы победили! \n Возвращение в меню...')
             delayedNav()
         }
+
+        const defeatedShips = fullShipDetect(newCells)
+        outlineDefeatedShips(defeatedShips, newCells)
+        setCells(newCells)
 
     }
 
@@ -54,10 +57,13 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     setModalText('Вы проиграли :(  \n Возвращение в меню...')
                     delayedNav()
                 }
+
+                const defeatedShips = fullShipDetect(newCells)
+                outlineDefeatedShips(defeatedShips, newCells)
+                setCells(newCells)
             }
         }
     }, [opponentMove])
-
 
     return (
         <div
