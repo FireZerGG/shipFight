@@ -48,10 +48,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
 
                 if (cells[opponentMove] === 0) {
                     newCells = cells.map((num, i) => i === opponentMove ? 3 : num)
-                    setCells(newCells)
                 } else {
                     newCells = cells.map((num, i) => i === opponentMove ? 2 : num)
-                    setCells(newCells)
                 }
                 if (newCells.filter(c => c === 2).length === 20) {
                     setModalText('Вы проиграли :(  \n Возвращение в меню...')
