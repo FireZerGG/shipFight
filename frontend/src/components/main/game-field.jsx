@@ -3,7 +3,6 @@ import { useRef, useState, useEffect } from "react";
 import { Ship } from "./Ship";
 import { navigate } from "react-router-dom";
 import { fullShipDetect, outlineDefeatedShips } from './gameFieldFunctions'
-import OpponentShips from "./OpponentShips";
 import GameCell from "./GameCell";
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
