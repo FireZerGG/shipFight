@@ -2,10 +2,9 @@ import mainStyles from "./main.module.css"
 import { useRef, useState, useEffect } from "react";
 import { Ship } from "./Ship";
 import { navigate } from "react-router-dom";
-import cross from './svg/cross.svg'
-import dot from './svg/dot.svg'
 import { fullShipDetect, outlineDefeatedShips } from './gameFieldFunctions'
 import OpponentShips from "./OpponentShips";
+import GameCell from "./GameCell";
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
 
@@ -61,6 +60,21 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         }
     }, [opponentMove])
 
+    let shipToRender = []
+    const defeatedShips = fullShipDetect(cells)
+    if (isOpponentField && defeatedShips.length !== 0) {
+        for (let ship of defeatedShips) {
+            shipToRender.push({
+                firstCell: ship[0],
+                length: ship.length,
+                direction: ship.length === 1 ? 'hor' 
+                            :  ship[1] - ship[0] === 1 
+                            ? 'hor' 
+                            : 'ver'      
+            })
+        }
+    }
+
     return (
         <div ref={fieldRef} className={mainStyles.gameField}>
             {cells.map((e, index) => (
@@ -69,8 +83,13 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     key={index}
                     e={e}
                     onClick={() => attack(index)}
+                    shipToRender = {shipToRender}
+                    index = {index}
                 ></GameCell>
             ))}
+
+            {/* {isOpponentField ? <OpponentShips defeatedShips = {fullShipDetect(cells)}/> : <></>} */}
+
             {shipsLayout.map((ship, index) => (
                 <Ship
                     key={index}
@@ -81,52 +100,6 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     startY={ship.startY}
                     rotation={'ver'}></Ship>
             ))}
-            {/* {isOpponentField ? <OpponentShips /> : <></>} */}
         </div>
-    )
-}
-
-function GameCell({ onClick, e, isOpponentField}) {
-    
-    let CurrentCellState 
-    if (!isOpponentField) {
-        switch (e) {
-            case 0:
-                CurrentCellState = <></>
-                break;
-            case 1:
-                CurrentCellState = 1
-                break;
-            case 2:
-                CurrentCellState = <img src={cross} alt="cross" /> 
-                break;
-            case 3:
-                CurrentCellState = <img src={dot} alt="dot" />
-                break;
-            default:
-                break;
-        }
-    } else {
-        switch (e) {
-            case 0:
-                CurrentCellState = <></>
-                break;
-            case 1:
-                CurrentCellState = <></>
-                break;
-            case 2:
-                CurrentCellState = <img src={cross} alt="cross" /> 
-                break;
-            case 3:
-                CurrentCellState = <img src={dot} alt="dot" />
-                break;
-            default:
-                break;
-        }
-    }
-    return (
-        <button onClick={onClick} className={mainStyles.cell}>
-            {CurrentCellState}
-        </button>
     )
 }
