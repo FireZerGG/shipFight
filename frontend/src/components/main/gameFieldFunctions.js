@@ -1,50 +1,34 @@
 export const fullShipDetect = (field) => {
 
-    let defeatedShipsArr = []
+    let defeatedCellsArr = []
 
     const check = (shipNumber, index, prefIndex) => {
         if (prefIndex === -1) {
-            defeatedShipsArr[shipNumber] = [index] 
+            defeatedCellsArr[shipNumber] = [index]
         } else {
-            defeatedShipsArr[shipNumber].push(index)
+            defeatedCellsArr[shipNumber].push(index)
         }
 
-        if (field[index -1] === 2) {
-            if (index % 10 !== 0) {
-                if (index - 1 !== prefIndex) {
-                    check(shipNumber, index -1, index)
-                }
-            }
+        if (field[index -1] === 2 && index % 10 !== 0 && index - 1 !== prefIndex) {
+            check(shipNumber, index -1, index)
         }
-        if (field[index +1] === 2) {
-            if (index % 10 !== 9) {
-                if (index + 1 !== prefIndex) {
-                    check(shipNumber, index +1, index)
-                }
-            }
+        if (field[index +1] === 2 && index % 10 !== 9 && index + 1 !== prefIndex) {
+            check(shipNumber, index +1, index)
         }
-        if (field[index -10] !== undefined) {
-            if (field[index -10] === 2) {
-                if (index -10 !== prefIndex) {
-                    check(shipNumber, index -10, index)
-                }
-            }
+        if (field[index -10] !== undefined && field[index -10] === 2 && index -10 !== prefIndex) {
+            check(shipNumber, index -10, index)
         }
-        if (field[index + 10] !== undefined) {
-            if (field[index +10] === 2) {
-                if (index + 10 !== prefIndex) {
-                    check(shipNumber, index +10, index)
-                }
-            }
+        if (field[index + 10] !== undefined && field[index +10] === 2 && index + 10 !== prefIndex) {
+            check(shipNumber, index +10, index)
         }
     }
-
+    
     let shipNumber = 0
-
+    
     for (let i in field) {
         let needToCheck = true
         if (field[+i] === 2) {
-            for (let ship of defeatedShipsArr) {
+            for (let ship of defeatedCellsArr) {
                 for (let c of ship) {
                     if (c === +i) {
                         needToCheck = false
@@ -57,39 +41,21 @@ export const fullShipDetect = (field) => {
             }
         }
     }
-    for (let shipI in defeatedShipsArr) {
-        let ship = defeatedShipsArr[+shipI]
-        loop2: for (let i in ship) {
-            if (ship[+i] % 10 !== 9) {
-                if (field[ship[+i]+1] === 1) {
-                    defeatedShipsArr.splice(+shipI,1)
-                    break loop2
-                }
-            }
-            if (ship[+i] % 10 !== 0) {
-                if (field[ship[+i]-1] === 1) {
-                    defeatedShipsArr.splice(+shipI,1)
-                    break loop2
-                }
-            }
-            if (field[ship[+i]+10] !== undefined) { 
-                if (field[ship[+i]+10] === 1) {
-                    defeatedShipsArr.splice(+shipI,1)
-                    break loop2
-                }
-            }
-            if (field[ship[+i]-10] !== undefined) {
-                if (field[ship[+i]-10] === 1) {
-                    defeatedShipsArr.splice(+shipI,1)
-                    break loop2
-                }
+
+    let defeatedShipsArr = defeatedCellsArr.slice()
+    return defeatedShipsArr.filter((ship) => {
+        for (let i in ship) {
+            let cell = ship[i]
+            if ((cell % 10 !== 9 && field[cell + 1] === 1) ||
+                (cell % 10 !== 0 && field[cell - 1] === 1) ||
+                (field[cell + 10] !== undefined && field[cell + 10] === 1) ||
+                (field[cell - 10] !== undefined && field[cell - 10] === 1)) {
+                return false
             }
         }
-    }
-
-    return defeatedShipsArr
+        return true
+    })
 }
-
 export const outlineDefeatedShips = (defeatedShips, cells) => {
     for (let ship of defeatedShips) {
         for (let i of ship) {

@@ -41,12 +41,12 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
   }
 
   const leaveGame = () => {
-    socket.current.close()
     setModalText("Вы вышли из игры. \n Возвращение в меню...")
     delayedNav()
   }
 
   const delayedNav = () => {
+    socket.current.close()
     setTimeout(() => {
       navigate("/")
     }, 2000)
@@ -73,7 +73,6 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
         setCurrentMove("first")
       }
     } else if (typeof JSON.parse(event.data) === "string") {
-      socket.current.close()
       setModalText("Противник вышел из игры. \n Возвращение в меню...")
       delayedNav()
     }

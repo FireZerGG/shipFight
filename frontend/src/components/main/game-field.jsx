@@ -4,7 +4,8 @@ import { Ship } from "./Ship";
 import { navigate } from "react-router-dom";
 import cross from './svg/cross.svg'
 import dot from './svg/dot.svg'
-import { fullShipDetect , outlineDefeatedShips } from './gameFieldFunctions'
+import { fullShipDetect, outlineDefeatedShips } from './gameFieldFunctions'
+import OpponentShips from "./OpponentShips";
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
 
@@ -24,10 +25,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         } else {
             newCells = cells.map((num, i) => i === index ? 2 : num)
         }
-
-        if (isOpponentField) {
-            sendMove(index)
-        }
+            
+        sendMove(index)
 
         if (newCells.filter(c => c === 2).length === 20) {
             setModalText('Вы победили! \n Возвращение в меню...')
@@ -37,7 +36,6 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         const defeatedShips = fullShipDetect(newCells)
         outlineDefeatedShips(defeatedShips, newCells)
         setCells(newCells)
-
     }
 
     useEffect(() => {
@@ -64,10 +62,7 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     }, [opponentMove])
 
     return (
-        <div
-            ref={fieldRef}
-            className={mainStyles.gameField}
-        >
+        <div ref={fieldRef} className={mainStyles.gameField}>
             {cells.map((e, index) => (
                 <GameCell
                     isOpponentField = {isOpponentField}
@@ -86,14 +81,14 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     startY={ship.startY}
                     rotation={'ver'}></Ship>
             ))}
+            {/* {isOpponentField ? <OpponentShips /> : <></>} */}
         </div>
     )
 }
 
 function GameCell({ onClick, e, isOpponentField}) {
-
+    
     let CurrentCellState 
-
     if (!isOpponentField) {
         switch (e) {
             case 0:
@@ -129,10 +124,9 @@ function GameCell({ onClick, e, isOpponentField}) {
                 break;
         }
     }
-
     return (
-        <button onClick={onClick} className={mainStyles.cell}>{
-            CurrentCellState
-        }</button>
+        <button onClick={onClick} className={mainStyles.cell}>
+            {CurrentCellState}
+        </button>
     )
 }
