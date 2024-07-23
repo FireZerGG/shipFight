@@ -63,6 +63,26 @@
     background-color: red;
 }
 
+.opponentShips {
+    background-color: aqua;
+    width: 450px;
+    height: 450px;
+    position: absolute;
+    z-index: -1;
+}
+
+.cellImg {
+    position: relative;
+    z-index: 2;
+}
+
+.shipImg {
+    position:absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
 @media (max-width: 1600px) {
     .container {
         padding-left: 70px;
