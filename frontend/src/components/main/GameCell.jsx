@@ -9,9 +9,11 @@ import ship2ver from "./svg/size2shipVert.svg"
 import ship3ver from "./svg/size3shipVert.svg"
 import ship4ver from "./svg/size4shipVert.svg"
 import mainStyles from './main.module.css'
+import rocket from './svg/rocket.svg'
+import explode from './svg/explosion.svg'
 import s from './Game.module.css'
 
-const GameCell = ({ onClick, e, isOpponentField, shipToRender, index}) => {
+const GameCell = ({ onClick, e, isOpponentField, shipToRender, index, activateRocket, activateExplosion}) => {
 
     let shipImg = <></>
     for (let ship of shipToRender) {
@@ -75,8 +77,11 @@ const GameCell = ({ onClick, e, isOpponentField, shipToRender, index}) => {
                 break;
         }
     }
+
     return (
         <button onClick={onClick} className={mainStyles.cell}>
+            <img className={activateRocket[1] && activateRocket[0] === index ? `${s.rocket} ${s.fallingRocket}` : s.rocket} src = {rocket}></img>
+            <img className={activateExplosion[1] && activateExplosion[0] === index ? `${s.explode} ${s.activeExplode}` : s.explode} src={explode}></img>
             {CurrentCellState}
             {shipImg}
         </button>

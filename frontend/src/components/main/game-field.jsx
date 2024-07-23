@@ -10,11 +10,17 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     let fieldRef = useRef(null);
 
     let [shipsLayout, setShipsLayout] = useState([])
+    const [activateRocket, setActivateRocket] = useState([-1, false])
+    const [activateExplosion, setActivateExplosion] = useState([-1, false])
 
     const attack = (index) => {
         if (!isOpponentField) return
         if (!canAttack) return
-        
+
+        setActivateRocket([index,true])
+
+        let needToExplode = false
+
         let newCells
         if (cells[index] === 2 || cells[index] === 3) {
             return
@@ -22,39 +28,79 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             newCells = cells.map((num, i) => i === index ? 3 : num)
         } else {
             newCells = cells.map((num, i) => i === index ? 2 : num)
+            needToExplode = true
         }
             
-        sendMove(index)
-
-        if (newCells.filter(c => c === 2).length === 20) {
-            setModalText('Вы победили! \n Возвращение в меню...')
-            delayedNav()
+        
+        const move = () => {
+            if (newCells.filter(c => c === 2).length === 20) {
+                setModalText('Вы победили! \n Возвращение в меню...')
+                delayedNav()
+            }
+            
+            const defeatedShips = fullShipDetect(newCells)
+            outlineDefeatedShips(defeatedShips, newCells)
+            setCells(newCells)
+            sendMove(index)
         }
-
-        const defeatedShips = fullShipDetect(newCells)
-        outlineDefeatedShips(defeatedShips, newCells)
-        setCells(newCells)
+        
+        setTimeout(() => {
+            setActivateRocket([index,false])
+            if (needToExplode) {
+                setActivateExplosion([index, true])
+                setTimeout(() => {
+                    setActivateExplosion([index, false])
+                    move()
+                }, 220);
+            } else {
+                move()
+            }
+    
+        }, 500)
     }
 
     useEffect(() => {
         if (!isOpponentField) {
             if (opponentMove !== -1) {
 
+                setActivateRocket([opponentMove,true])
+                
+                let needToExplode = false
+                
                 let newCells
-
                 if (cells[opponentMove] === 0) {
                     newCells = cells.map((num, i) => i === opponentMove ? 3 : num)
                 } else {
                     newCells = cells.map((num, i) => i === opponentMove ? 2 : num)
-                }
-                if (newCells.filter(c => c === 2).length === 20) {
-                    setModalText('Вы проиграли :(  \n Возвращение в меню...')
-                    delayedNav()
+                    needToExplode = true
                 }
 
-                const defeatedShips = fullShipDetect(newCells)
-                outlineDefeatedShips(defeatedShips, newCells)
-                setCells(newCells)
+                const move = () => {
+                    if (newCells.filter(c => c === 2).length === 20) {
+                        setModalText('Вы проиграли :(  \n Возвращение в меню...')
+                        delayedNav()
+                    }
+
+                    const defeatedShips = fullShipDetect(newCells)
+                    outlineDefeatedShips(defeatedShips, newCells)
+                    setCells(newCells)
+                }
+
+                setTimeout(() => {
+                    setActivateRocket([opponentMove,false])
+
+                    if (needToExplode) {
+                        setActivateExplosion([opponentMove, true])
+                        setTimeout(() => {
+                            setActivateExplosion([opponentMove, false])
+                            move()
+                        }, 220);
+                    } else {
+                        move()
+                    }
+
+                }, 500);
+
             }
         }
     }, [opponentMove])
@@ -84,6 +130,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     onClick={() => attack(index)}
                     shipToRender = {shipToRender}
                     index = {index}
+                    activateRocket = {activateRocket}
+                    activateExplosion = {activateExplosion}
                 ></GameCell>
             ))}
 
