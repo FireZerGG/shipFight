@@ -2,7 +2,7 @@ import mainStyles from "./main.module.css"
 import { useRef } from "react";
 import { Ship } from "./Ship";
 
-export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsLayout }) {
+export const SetupField = ({ cells, refreshOccupiedCells, shipsLayout, setShipsLayout }) => {
     let fieldRef = useRef(null);
 
     const dragOverHandler = (ev) => {
@@ -17,10 +17,11 @@ export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsL
         const shipPointY = ev.clientY - rect.top - parseFloat(data[1]) + 20;
         const shipPointXCell = Math.floor(shipPointX / 45);
         const shipPointYCell = Math.floor(shipPointY / 45);
-        shipMoveAttemptHandler(data[2], [shipPointXCell, shipPointYCell]);
+        shipMoveAttemptHandler(data[2], [shipPointXCell, shipPointYCell], data[3]);
     }
 
-    const shipMoveAttemptHandler = (shipNumber, start, rotation = 'ver') => {
+    const shipMoveAttemptHandler = (shipNumber, start, rotation, opCells=null) => {
+        if (opCells===null) opCells=cells;
         if (start[0] < 0 || start[1] < 0) return;
         let size = 0;
         if (shipNumber <= 1) {
@@ -35,10 +36,14 @@ export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsL
         else if (shipNumber <= 10) {
             size = 1;
         }
-        if (rotation === 'ver' && start[1] + size > 10) return;
-        else if (rotation === 'hor' && start[0] + size > 10) return;
-        else if (areCellsVacant(size, start, rotation)) {
+        if (rotation === 'ver' && start[1] + size > 10) return false;
+        else if (rotation === 'hor' && start[0] + size > 10) return false;
+        else if (areCellsVacant(size, start, rotation, opCells)) {
             shipMoveHandler(shipNumber, size, start, rotation);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -57,16 +62,16 @@ export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsL
         refreshOccupiedCells(newShipsLayout);
     }
 
-    const areCellsVacant = (size, start, rotation) => {
+    const areCellsVacant = (size, start, rotation, opCells) => {
         if (rotation === 'ver') {
             for (let i = 0; i < size; i++) {
-                if (cells[10 * (start[1] + i) + start[0]] === 1 || cells[10 * (start[1] + i) + start[0]] === 4) return false;
+                if (opCells[10 * (start[1] + i) + start[0]] === 1 || opCells[10 * (start[1] + i) + start[0]] === 4) return false;
             }
             return true;
         }
         else {
             for (let i = 0; i < size; i++) {
-                if (cells[10 * start[1] + start[0] + i] === 1 || cells[10 * start[1] + start[0] + i] === 4) return false;
+                if (opCells[10 * start[1] + start[0] + i] === 1 || opCells[10 * start[1] + start[0] + i] === 4) return false;
             }
             return true;
         }
@@ -75,36 +80,38 @@ export function SetupField({ cells, refreshOccupiedCells, shipsLayout, setShipsL
 
     return (
         <div
+            onContextMenu={(ev) => ev.preventDefault()}
             ref={fieldRef}
             className={mainStyles.gameField}
             onDragOver={(ev) => dragOverHandler(ev)}
             onDrop={(ev) => dropHandler(ev)}
         >
             {cells.map((e, index) => (
-                <GameCell
+                <SetupCell
                     key={index}
                     e={e}
-                ></GameCell>
+                ></SetupCell>
             ))}
-            {shipsLayout.filter(e => e.isOnField).map((ship, index) => (
+            {shipsLayout.filter(e => e.isOnField).map((e) => (
                 <Ship
-                    key={index}
-                    isOnField={ship.isOnField}
-                    shipNumber={ship.shipNumber}
-                    size={ship.size}
-                    startX={ship.startX}
-                    startY={ship.startY}
-                    rotation={'ver'}
+                    key={e.shipNumber}
+                    isOnField={e.isOnField}
+                    shipNumber={e.shipNumber}
+                    size={e.size}
+                    startX={e.startX}
+                    startY={e.startY}
+                    rotation={e.rotation}
                     shipsLayout={shipsLayout}
                     refreshOccupiedCells={refreshOccupiedCells}
+                    shipMoveAttemptHandler={shipMoveAttemptHandler}
                 />
             ))}
         </div>
     )
-}
+};
 
-function GameCell({ e }) {
+function SetupCell({ e }) {
     return (
-        <button className={mainStyles.cell}>{e}</button>
+        <button style={e===4 ? {backgroundColor: 'lightgray'} : {}} className={mainStyles.cell}></button>
     )
 }
