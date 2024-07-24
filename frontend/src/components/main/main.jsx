@@ -10,6 +10,7 @@ export function Main() {
 
     const [needToNavigate, setNeedToNavigate] = useState(true)
     const [cells, setCells] = useState(Array(100).fill(0))
+    const [shipsLayout, setShipsLayout] = useState(Array(10).fill(null).map((e, index) => ({ shipNumber: index + 1, isOnField: false, rotation: 'hor' })));
 
     const socket = useRef()
     const insertIntoQueue = () => {
@@ -22,13 +23,22 @@ export function Main() {
         <main className={mainStyles.main}>
 
             <Routes>
-                <Route path="/" element={<GameMenu cells={cells} insertIntoQueue = {insertIntoQueue} setCells = {setCells} />}/>
+                <Route path="/" element={
+                    <GameMenu 
+                        cells={cells} 
+                        insertIntoQueue = {insertIntoQueue} 
+                        setCells = {setCells} 
+                        setShipsLayout = {setShipsLayout}
+                        shipsLayout = {shipsLayout}
+                    />}/>
                 <Route path="/game" element={
                     <Game 
                 cells = {cells}
                 setCells = {setCells}
                 socket = {socket}
                 navigate = {navigate}
+                shipsLayout = {shipsLayout}
+                setShipsLayout = {setShipsLayout}
                 needToNavigate = {needToNavigate}/>
                 }/>
             </Routes>

@@ -13,8 +13,8 @@ import size3shipVert from "./svg/size3shipVert.svg"
 import size4shipVert from "./svg/size4shipVert.svg"
 
 
-export function GameMenu({ cells, setCells, insertIntoQueue }) {
-    let [shipsLayout, setShipsLayout] = useState(Array(10).fill(null).map((e, index) => ({ shipNumber: index + 1, isOnField: false, rotation: 'hor' })));
+export function GameMenu({ cells, setCells, insertIntoQueue, setShipsLayout, shipsLayout }) {
+    
 
     const refreshOccupiedCells = (newShipsLayout) => {
         const newCells = new Array(100).fill(0);

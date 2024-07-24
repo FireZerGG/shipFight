@@ -1,17 +1,23 @@
 import mainStyles from "./main.module.css"
 import { useRef, useState, useEffect } from "react"
-import { Ship } from "./Ship"
-import { navigate } from "react-router-dom";
 import { fullShipDetect, outlineDefeatedShips } from './gameFieldFunctions'
 import GameCell from "./GameCell"
+import size1ship from "./svg/size1ship.svg"
+import size2ship from "./svg/size2ship.svg"
+import size3ship from "./svg/size3ship.svg"
+import size4ship from "./svg/size4ship.svg"
+import size1shipVert from "./svg/size1shipVert.svg"
+import size2shipVert from "./svg/size2shipVert.svg"
+import size3shipVert from "./svg/size3shipVert.svg"
+import size4shipVert from "./svg/size4shipVert.svg"
 
-export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
+
+export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav, shipsLayout }) {
 
     const [animationOfAttack, setAnimationOfAttack] = useState(false)
 
-    let fieldRef = useRef(null);
+    let fieldRef = useRef(null)
 
-    let [shipsLayout, setShipsLayout] = useState([])
     const [activateRocket, setActivateRocket] = useState([-1, false])
     const [activateExplosion, setActivateExplosion] = useState([-1, false])
 
@@ -76,19 +82,20 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                 
                 let needToExplode = false
                 
-                let newCells
+                let newCells = cells.slice()
                 if (cells[opponentMove] === 0) {
-                    newCells = cells.map((num, i) => i === opponentMove ? 3 : num)
+                    newCells = newCells.map((num, i) => i === opponentMove ? 3 : num)
                 } else {
-                    newCells = cells.map((num, i) => i === opponentMove ? 2 : num)
+                    newCells = newCells.map((num, i) => i === opponentMove ? 2 : num)
                     needToExplode = true
                 }
 
+                if (newCells.filter(c => c === 2).length === 20) {
+                    setModalText('Вы проиграли :(  \n Возвращение в меню...')
+                    delayedNav()
+                }
+
                 const move = () => {
-                    if (newCells.filter(c => c === 2).length === 20) {
-                        setModalText('Вы проиграли :(  \n Возвращение в меню...')
-                        delayedNav()
-                    }
 
                     const defeatedShips = fullShipDetect(newCells)
                     outlineDefeatedShips(defeatedShips, newCells)
@@ -129,6 +136,20 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         }
     }
 
+    const renderShips = (ship) => {
+        if (ship.rotation === 'ver') {
+            if (ship.shipNumber === 1) return size4shipVert
+            if (ship.shipNumber <= 3) return size3shipVert
+            if (ship.shipNumber <= 6) return size2shipVert
+            if (ship.shipNumber <= 10) return size1shipVert
+        } else {
+            if (ship.shipNumber === 1) return size4ship
+            if (ship.shipNumber <= 3) return size3ship
+            if (ship.shipNumber <= 6) return size2ship
+            if (ship.shipNumber <= 10) return size1ship
+        }
+    }
+
     return (
         <div ref={fieldRef} className={mainStyles.gameField}>
             {cells.map((e, index) => (
@@ -144,15 +165,13 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                 ></GameCell>
             ))}
 
-            {shipsLayout.map((ship, index) => (
-                <Ship
+            {isOpponentField ? <></> : shipsLayout.map((ship, index) => (
+                <img
+                    style={{ position: "absolute", top: ship.startY * 45, left: ship.startX * 45 }}
                     key={index}
-                    isOnField={ship.isOnField}
-                    shipNumber={ship.shipNumber}
-                    size={ship.size}
-                    startX={ship.startX}
-                    startY={ship.startY}
-                    rotation={'ver'}></Ship>
+                    src = {renderShips(ship)}
+                >
+                </img>
             ))}
         </div>
     )

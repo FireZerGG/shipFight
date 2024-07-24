@@ -2,8 +2,9 @@ import s from './Game.module.css'
 import { GameField } from "./game-field"
 import ModalWindow from './ModalWindow'
 import { useEffect, useState } from 'react'
+import loader from './svg/loader.svg'
 
-export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
+export function Game ({cells, setCells, socket, navigate, needToNavigate, shipsLayout, setShipsLayout}) {
 
   const [isInQueue, setIsInQueue] = useState(false)
   const [opponentCells, setOpponentCells] = useState("")
@@ -81,6 +82,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
   }
 
   socket.current.onclose = () => {
+    setShipsLayout(Array(10).fill(null).map((e, index) => ({ shipNumber: index + 1, isOnField: false, rotation: 'hor' })))
     setCells(Array(100).fill(0))
     console.log("сокет закрыт")
   }
@@ -90,35 +92,43 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
 
   return (
     <div className={s.container}>
-
-
-        <GameField 
-          isOpponentField = {false} 
-          cells = {cells}
-          opponentMove = {opponentMove}
-          setCells = {setCells}
-          setModalText = {setModalText}
-          delayedNav = {delayedNav}
+        <div className={s.myField}>
+          <h3>Ваше поле</h3>
+          <GameField 
+            isOpponentField = {false} 
+            cells = {cells}
+            opponentMove = {opponentMove}
+            setCells = {setCells}
+            setModalText = {setModalText}
+            delayedNav = {delayedNav}
+            shipsLayout = {shipsLayout}
         />
+        </div>
         {
           isInQueue 
-          ? <h2>Ожидаем второго игрока...</h2>
+          ? <div className={s.loadingBLock}>
+              <h2>Ожидаем второго игрока...</h2>
+              <img alt='loader' src={loader}></img>
+            </div>
           : opponentCells === ''
             ? <></>
             : <>
-              <div className={s.gameInfo}>
-                {currentMove === 'first' ? <h1> ---ход--&gt;</h1> : <h1>&lt;--xод---</h1>}
-                <button className={s.exitBtn} onClick={leaveGame}>Выход</button>
-              </div>
-              <GameField 
-                sendMove = {sendMove}
-                isOpponentField = {true}
-                canAttack = {currentMove === 'first' ? true : false}
-                cells = {opponentCells}
-                setCells = {setOpponentCells}
-                setModalText = {setModalText}
-                delayedNav = {delayedNav}
-              /> 
+                <div className={s.gameInfo}>
+                  {currentMove === 'first' ? <h1>Ваш ход</h1> : <h1>Ход противника</h1>}
+                  <button className={s.exitBtn} onClick={leaveGame}>Выход</button>
+                </div>
+                <div className={s.opponentField}>
+                  <h3>Поле противника</h3>
+                  <GameField 
+                    sendMove = {sendMove}
+                    isOpponentField = {true}
+                    canAttack = {currentMove === 'first' ? true : false}
+                    cells = {opponentCells}
+                    setCells = {setOpponentCells}
+                    setModalText = {setModalText}
+                    delayedNav = {delayedNav}
+                  /> 
+                </div>
               </>
         }
         <ModalWindow modalText = {modalText} />
