@@ -1,11 +1,13 @@
 import mainStyles from "./main.module.css"
-import { useRef, useState, useEffect } from "react";
-import { Ship } from "./Ship";
+import { useRef, useState, useEffect } from "react"
+import { Ship } from "./Ship"
 import { navigate } from "react-router-dom";
 import { fullShipDetect, outlineDefeatedShips } from './gameFieldFunctions'
-import GameCell from "./GameCell";
+import GameCell from "./GameCell"
 
 export function GameField({ cells, setCells, sendMove, canAttack, isOpponentField, opponentMove, setModalText, delayedNav }) {
+
+    const [animationOfAttack, setAnimationOfAttack] = useState(false)
 
     let fieldRef = useRef(null);
 
@@ -14,23 +16,30 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     const [activateExplosion, setActivateExplosion] = useState([-1, false])
 
     const attack = (index) => {
+
+        setAnimationOfAttack(true)
+        setTimeout(() => {
+            setAnimationOfAttack(false)
+        }, 720);
+        
+        if (animationOfAttack) return
         if (!isOpponentField) return
         if (!canAttack) return
-
+        if (cells[index] === 2 || cells[index] === 3) return
+        
+        
         setActivateRocket([index,true])
-
+        
         let needToExplode = false
-
+        
         let newCells
-        if (cells[index] === 2 || cells[index] === 3) {
-            return
-        } else if (cells[index] === 0) {
+        if (cells[index] === 0) {
             newCells = cells.map((num, i) => i === index ? 3 : num)
         } else {
             newCells = cells.map((num, i) => i === index ? 2 : num)
             needToExplode = true
         }
-            
+        
         
         const move = () => {
             if (newCells.filter(c => c === 2).length === 20) {
@@ -40,11 +49,11 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             
             const defeatedShips = fullShipDetect(newCells)
             outlineDefeatedShips(defeatedShips, newCells)
-            setCells(newCells)
             sendMove(index)
+            setCells(newCells)
         }
-        
-        setTimeout(() => {
+            
+            setTimeout(() => {
             setActivateRocket([index,false])
             if (needToExplode) {
                 setActivateExplosion([index, true])
@@ -134,8 +143,6 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     activateExplosion = {activateExplosion}
                 ></GameCell>
             ))}
-
-            {/* {isOpponentField ? <OpponentShips defeatedShips = {fullShipDetect(cells)}/> : <></>} */}
 
             {shipsLayout.map((ship, index) => (
                 <Ship

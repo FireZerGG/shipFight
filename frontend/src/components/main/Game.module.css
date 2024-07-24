@@ -45,6 +45,8 @@
 }
 
 .modalContent {
+    position: relative;
+    z-index: 4;
     height: 130px;
     width: 270px;
     margin-top: 270px;

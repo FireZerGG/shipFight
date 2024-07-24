@@ -1,7 +1,7 @@
 const ws = require('ws')
 
 const wss = new ws.Server({
-    port: 5000
+    port: 5000,
 }, () => console.log('server start on 5000'))
 
 let queue = []

@@ -46,8 +46,8 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
   }
 
   const delayedNav = () => {
-    socket.current.close()
     setTimeout(() => {
+      socket.current.close()
       navigate("/")
     }, 2000)
   }
@@ -70,7 +70,9 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
     } else if (typeof JSON.parse(event.data) === "number") {
       setOpponentMove(JSON.parse(event.data))
       if (opponentCells[JSON.parse(event.data)] !== 1 && opponentCells[JSON.parse(event.data)] !== 2) {
-        setCurrentMove("first")
+        setTimeout(() => {
+          setCurrentMove("first")
+        }, 550);
       }
     } else if (typeof JSON.parse(event.data) === "string") {
       setModalText("Противник вышел из игры. \n Возвращение в меню...")
@@ -89,7 +91,6 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
   return (
     <div className={s.container}>
 
-        <ModalWindow modalText = {modalText} />
 
         <GameField 
           isOpponentField = {false} 
@@ -120,6 +121,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate}) {
               /> 
               </>
         }
+        <ModalWindow modalText = {modalText} />
     </div>
   )
 }
