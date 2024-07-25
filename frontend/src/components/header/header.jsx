@@ -3,7 +3,7 @@ import headerStyles from "./header.module.css"
 export function Header() {
     return (
         <header className={headerStyles.header}>
-            <div className={headerStyles.heading}>Морской бой или что-то типа того</div>
+            <div className={headerStyles.heading}>МОРСКОЙ БОЙ</div>
         </header>
     );
 }

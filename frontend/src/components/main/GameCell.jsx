@@ -48,7 +48,7 @@ const GameCell = ({ onClick, e, isOpponentField, shipToRender, index, activateRo
                 CurrentCellState = <></>
                 break;
             case 1:
-                CurrentCellState = 1
+                CurrentCellState = <></>
                 break;
             case 2:
                 CurrentCellState = <img className={s.cellImg} src={cross} alt="cross" /> 

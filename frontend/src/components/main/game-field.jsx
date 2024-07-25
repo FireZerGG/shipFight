@@ -17,6 +17,7 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
     const [animationOfAttack, setAnimationOfAttack] = useState(false)
 
     let fieldRef = useRef(null)
+    let cellsRef = useRef(cells)
 
     const [activateRocket, setActivateRocket] = useState([-1, false])
     const [activateExplosion, setActivateExplosion] = useState([-1, false])
@@ -27,17 +28,18 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         setTimeout(() => {
             setAnimationOfAttack(false)
         }, 720);
-        
+
         if (animationOfAttack) return
         if (!isOpponentField) return
         if (!canAttack) return
         if (cells[index] === 2 || cells[index] === 3) return
-        
-        
-        setActivateRocket([index,true])
-        
+
+        sendMove(index)
+
+        setActivateRocket([index, true])
+
         let needToExplode = false
-        
+
         let newCells
         if (cells[index] === 0) {
             newCells = cells.map((num, i) => i === index ? 3 : num)
@@ -45,22 +47,21 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             newCells = cells.map((num, i) => i === index ? 2 : num)
             needToExplode = true
         }
-        
-        
+
+
         const move = () => {
             if (newCells.filter(c => c === 2).length === 20) {
                 setModalText('Вы победили! \n Возвращение в меню...')
                 delayedNav()
             }
-            
+
             const defeatedShips = fullShipDetect(newCells)
             outlineDefeatedShips(defeatedShips, newCells)
-            sendMove(index)
             setCells(newCells)
         }
-            
-            setTimeout(() => {
-            setActivateRocket([index,false])
+
+        setTimeout(() => {
+            setActivateRocket([index, false])
             if (needToExplode) {
                 setActivateExplosion([index, true])
                 setTimeout(() => {
@@ -70,41 +71,47 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             } else {
                 move()
             }
-    
+
         }, 500)
     }
 
+    
+    
     useEffect(() => {
         if (!isOpponentField) {
             if (opponentMove !== -1) {
-
-                setActivateRocket([opponentMove,true])
+                
+                setActivateRocket([opponentMove, true])
                 
                 let needToExplode = false
                 
                 let newCells = cells.slice()
                 if (cells[opponentMove] === 0) {
                     newCells = newCells.map((num, i) => i === opponentMove ? 3 : num)
+                    cellsRef.current = newCells
+                    console.log(cellsRef)
                 } else {
                     newCells = newCells.map((num, i) => i === opponentMove ? 2 : num)
+                    cellsRef.current = newCells
                     needToExplode = true
                 }
 
-                if (newCells.filter(c => c === 2).length === 20) {
+                setCells(cellsRef.current)
+                
+                if (cellsRef.current.filter(c => c === 2).length === 20) {
                     setModalText('Вы проиграли :(  \n Возвращение в меню...')
                     delayedNav()
                 }
 
+                
                 const move = () => {
-
                     const defeatedShips = fullShipDetect(newCells)
                     outlineDefeatedShips(defeatedShips, newCells)
-                    setCells(newCells)
                 }
-
+            
                 setTimeout(() => {
-                    setActivateRocket([opponentMove,false])
-
+                    setActivateRocket([opponentMove, false])
+            
                     if (needToExplode) {
                         setActivateExplosion([opponentMove, true])
                         setTimeout(() => {
@@ -114,9 +121,9 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                     } else {
                         move()
                     }
-
+            
                 }, 500);
-
+                
             }
         }
     }, [opponentMove])
@@ -128,10 +135,10 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
             shipToRender.push({
                 firstCell: ship[0],
                 length: ship.length,
-                direction: ship.length === 1 ? 'hor' 
-                            :  ship[1] - ship[0] === 1 
-                            ? 'hor' 
-                            : 'ver'      
+                direction: ship.length === 1 ? 'hor'
+                    : ship[1] - ship[0] === 1
+                        ? 'hor'
+                        : 'ver'
             })
         }
     }
@@ -154,14 +161,14 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
         <div ref={fieldRef} className={mainStyles.gameField}>
             {cells.map((e, index) => (
                 <GameCell
-                    isOpponentField = {isOpponentField}
+                    isOpponentField={isOpponentField}
                     key={index}
                     e={e}
                     onClick={() => attack(index)}
-                    shipToRender = {shipToRender}
-                    index = {index}
-                    activateRocket = {activateRocket}
-                    activateExplosion = {activateExplosion}
+                    shipToRender={shipToRender}
+                    index={index}
+                    activateRocket={activateRocket}
+                    activateExplosion={activateExplosion}
                 ></GameCell>
             ))}
 
@@ -169,7 +176,8 @@ export function GameField({ cells, setCells, sendMove, canAttack, isOpponentFiel
                 <img
                     style={{ position: "absolute", top: ship.startY * 45, left: ship.startX * 45 }}
                     key={index}
-                    src = {renderShips(ship)}
+                    src={renderShips(ship)}
+                    alt='ship'
                 >
                 </img>
             ))}

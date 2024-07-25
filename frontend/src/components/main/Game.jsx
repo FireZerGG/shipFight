@@ -30,7 +30,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate, shipsL
   }
 
   const sendMove = (move) => {
-    if (cells[move] !== 1 && cells[move] !== 2) {
+    if (opponentCells[move] !== 1 && opponentCells[move] !== 2) {
       setCurrentMove("second")
     }
     socket.current.send(
@@ -70,7 +70,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate, shipsL
       setIsInQueue(false)
     } else if (typeof JSON.parse(event.data) === "number") {
       setOpponentMove(JSON.parse(event.data))
-      if (opponentCells[JSON.parse(event.data)] !== 1 && opponentCells[JSON.parse(event.data)] !== 2) {
+      if (cells[JSON.parse(event.data)] !== 1 && cells[JSON.parse(event.data)] !== 2) {
         setTimeout(() => {
           setCurrentMove("first")
         }, 550);
@@ -93,7 +93,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate, shipsL
   return (
     <div className={s.container}>
         <div className={s.myField}>
-          <h3>Ваше поле</h3>
+          <h2>Ваше поле</h2>
           <GameField 
             isOpponentField = {false} 
             cells = {cells}
@@ -118,7 +118,7 @@ export function Game ({cells, setCells, socket, navigate, needToNavigate, shipsL
                   <button className={s.exitBtn} onClick={leaveGame}>Выход</button>
                 </div>
                 <div className={s.opponentField}>
-                  <h3>Поле противника</h3>
+                  <h2>Поле противника</h2>
                   <GameField 
                     sendMove = {sendMove}
                     isOpponentField = {true}
