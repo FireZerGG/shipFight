@@ -35,7 +35,7 @@ wss.on('connection', function connection(ws) {
     })
 
     ws.on('close',  () => {
-        if (queue[0].id === ws.id) queue = []
+        if (queue[0] && queue[0].id === ws.id) queue = []
         let opponent = findOpponentId(ws.id)
         send(opponent, 'Leave')
     })
