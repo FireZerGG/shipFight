@@ -15,7 +15,7 @@ export function Main() {
     const socket = useRef()
     const insertIntoQueue = () => {
         setNeedToNavigate(false)
-        socket.current = new WebSocket('ws://localhost:5000')
+        socket.current = new WebSocket('ws://5.129.225.68:5000')
         setCells(prefCells => prefCells.map(c => c === 4 ? 0 : c))
     }
 
